@@ -1,0 +1,37 @@
+--- 
+apiVersion: v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Service
+metadata:
+  name: tutum-helloworld-service 
+spec:
+  selector:
+    app: tutum-helloworld
+  ports:
+    - # Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 80
+      # Port accessible outside cluster
+      nodePort: 30003
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: tutum-helloworld-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tutum-helloworld
+  replicas: 5 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: tutum-helloworld
+    spec:
+      containers:
+      - name: tutum-helloworld-container
+        image: tutum/hello-world
+        ports:
+        - containerPort: 80
